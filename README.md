@@ -11,6 +11,13 @@ or Textadept's *modules/* directory, and then putting the following in your
 
     require('lua_repl')
 
+Select "Tools > Lua REPL" to open the REPL. Typing the Enter key on any line
+evaluates that line, unless that line is a continuation line. In that case,
+when finished, select the lines to evaluate and type Enter to evaluate the
+entire chunk.
+
+Lines may be optionally prefixed with '=' (similar to the Lua prompt) to
+print a result.
 
 ## Functions defined by `lua_repl`
 
