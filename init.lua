@@ -183,7 +183,7 @@ table.insert(textadept.menu.menubar[_L['Tools']], {''})
 table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], function()
   buffer.new()._type = '[Lua REPL]'
   buffer:set_lexer('lua')
-  buffer:add_text('-- ' .. _L['Lua REPL'])
+  buffer:add_text('-- ' .. _L['Lua REPL']:gsub('_', ''))
   buffer:new_line()
   buffer:set_save_point()
   -- Cannot initially define keys in `keys.lua` because that table does not
