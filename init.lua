@@ -1,33 +1,28 @@
--- Copyright 2014-2020 Mitchell. See LICENSE.
+-- Copyright 2014-2021 Mitchell. See LICENSE.
 
 --[[ This comment is for LuaDoc
 ---
--- A Textadept module for loading an interactive Lua REPL using the editor's Lua
--- State, similar to Lua's interactive REPL.
+-- A Textadept module for loading an interactive Lua REPL using the editor's Lua State, similar
+-- to Lua's interactive REPL.
 --
 -- This is an alternative to the single-line Lua command entry.
 --
--- Install this module by copying it into your *~/.textadept/modules/* directory
--- or Textadept's *modules/* directory, and then putting the following in your
--- *~/.textadept/init.lua*:
+-- Install this module by copying it into your *~/.textadept/modules/* directory or Textadept's
+-- *modules/* directory, and then putting the following in your *~/.textadept/init.lua*:
 --
 --     require('lua_repl')
 --
--- Select "Tools > Lua REPL" to open the REPL. Typing the Enter key on any line
--- evaluates that line, unless that line is a continuation line. In that case,
--- when finished, select the lines to evaluate and type Enter to evaluate the
--- entire chunk.
+-- Select "Tools > Lua REPL" to open the REPL. Typing the Enter key on any line evaluates that
+-- line, unless that line is a continuation line. In that case, when finished, select the lines
+-- to evaluate and type Enter to evaluate the entire chunk.
 --
--- Lines may be optionally prefixed with '=' (similar to the Lua prompt) to
--- print a result.
+-- Lines may be optionally prefixed with '=' (similar to the Lua prompt) to print a result.
 module('lua_repl')]]
 
 local M = {}
 
 -- Localizations.
-if not rawget(_L, 'Lua REPL') then
-  _L['Lua REPL'] = 'L_ua REPL'
-end
+if not rawget(_L, 'Lua REPL') then _L['Lua REPL'] = 'L_ua REPL' end
 
 -- A special environment for a Lua REPL.
 -- It has an `__index` metafield for accessing Textadept's global environment.
@@ -47,17 +42,14 @@ local env = setmetatable({
 
 ---
 -- Lua command history.
--- It has a numeric `pos` field that indicates where in the history the user
--- currently is.
+-- It has a numeric `pos` field that indicates where in the history the user currently is.
 -- @class table
 -- @name history
 M.history = {pos = 0}
 
 ---
--- Evaluates as Lua code the current line or the text on the currently selected
--- lines.
--- If the current line has a syntax error, it is ignored and treated as a line
--- continuation.
+-- Evaluates as Lua code the current line or the text on the currently selected lines.
+-- If the current line has a syntax error, it is ignored and treated as a line continuation.
 -- @name evaluate_repl
 function M.evaluate_repl()
   local s, e = buffer.selection_start, buffer.selection_end
@@ -86,15 +78,12 @@ function M.evaluate_repl()
     if type(result) == 'table' then
       -- Pretty-print tables like ui.command_entry does.
       local items = {}
-      for k, v in pairs(result) do
-        items[#items + 1] = string.format('%s = %s', k, v)
-      end
+      for k, v in pairs(result) do items[#items + 1] = string.format('%s = %s', k, v) end
       table.sort(items)
       result = string.format('{%s}', table.concat(items, ', '))
       if view.edge_column > 0 and #result > view.edge_column then
         local indent = string.rep(' ', buffer.tab_width)
-        result = string.format(
-          '{\n%s%s\n}', indent, table.concat(items, ',\n' .. indent))
+        result = string.format('{\n%s%s\n}', indent, table.concat(items, ',\n' .. indent))
       end
     end
     buffer:add_text(tostring(result):gsub('(\r?\n)', '%1--> '))
@@ -110,17 +99,14 @@ end
 -- @name complete_lua
 function M.complete_lua()
   local line, pos = buffer:get_cur_line()
-  local symbol, op, part = line:sub(1, pos - 1):match(
-    '([%w_.]-)([%.:]?)([%w_]*)$')
-  local ok, result = pcall(
-    (load(string.format('return (%s)', symbol), nil, 't', env)))
+  local symbol, op, part = line:sub(1, pos - 1):match('([%w_.]-)([%.:]?)([%w_]*)$')
+  local ok, result = pcall((load(string.format('return (%s)', symbol), nil, 't', env)))
   if (not ok or type(result) ~= 'table') and symbol ~= '' then return end
   local cmpls = {}
   part = '^' .. part
   if not ok or symbol == 'buffer' then
     local sci = _SCINTILLA
-    local global_envs =
-      not ok and {_G} or
+    local global_envs = not ok and {_G} or
       (op == ':' and {sci.functions} or {sci.properties, sci.constants})
     for i = 1, #global_envs do
       for k in pairs(global_envs[i]) do
@@ -129,24 +115,24 @@ function M.complete_lua()
     end
   else
     for k, v in pairs(result) do
-      if type(k) == 'string' and k:find(part) and
-         (op == '.' or type(v) == 'function') then
+      if type(k) == 'string' and k:find(part) and (op == '.' or type(v) == 'function') then
         cmpls[#cmpls + 1] = k
       end
     end
   end
   table.sort(cmpls)
   buffer.auto_c_order = buffer.ORDER_PRESORTED
-  buffer:auto_c_show(
-    #part - 1, table.concat(cmpls, string.char(buffer.auto_c_separator)))
+  buffer:auto_c_show(#part - 1, table.concat(cmpls, string.char(buffer.auto_c_separator)))
 end
 
 ---
--- Cycle backward through command history, taking into account commands with
--- multiple lines.
+-- Cycle backward through command history, taking into account commands with multiple lines.
 -- @name cycle_history_prev
 function M.cycle_history_prev()
-  if buffer:auto_c_active() then buffer:line_up() return end
+  if buffer:auto_c_active() then
+    buffer:line_up()
+    return
+  end
   if M.history.pos <= 1 then return end
   for _ in (M.history[M.history.pos] or ''):gmatch('\n') do
     buffer:line_delete()
@@ -158,11 +144,13 @@ function M.cycle_history_prev()
 end
 
 ---
--- Cycle forward through command history, taking into account commands with
--- multiple lines.
+-- Cycle forward through command history, taking into account commands with multiple lines.
 -- @name cycle_history_next
 function M.cycle_history_next()
-  if buffer:auto_c_active() then buffer:line_down() return end
+  if buffer:auto_c_active() then
+    buffer:line_down()
+    return
+  end
   if M.history.pos >= #M.history then return end
   for _ in (M.history[M.history.pos] or ''):gmatch('\n') do
     buffer:line_delete()
@@ -173,6 +161,7 @@ function M.cycle_history_next()
   buffer:add_text(M.history[M.history.pos])
 end
 
+-- LuaFormatter off
 ---
 -- Table of key bindings for the REPL.
 -- @class table
@@ -185,18 +174,19 @@ M.keys = {
   cp = M.cycle_history_prev,
   cn = M.cycle_history_next
 }
+-- LuaFormatter on
 
 -- Add REPL to Tools menu.
 table.insert(textadept.menu.menubar[_L['Tools']], {''})
+-- LuaFormatter off
 table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], function()
   buffer.new()._type = '[Lua REPL]'
   buffer:set_lexer('lua')
   buffer:add_text('-- ' .. _L['Lua REPL']:gsub('_', ''))
   buffer:new_line()
   buffer:set_save_point()
-  -- Cannot initially define keys in `keys.lua` because that table does not
-  -- exist yet and will be overwritten by the Lua language module. Instead,
-  -- define keys here.
+  -- Cannot initially define keys in `keys.lua` because that table does not exist yet and will
+  -- be overwritten by the Lua language module. Instead, define keys here.
   if not keys.lua[next(M.keys)] then
     for key, f in pairs(M.keys) do
       keys.lua[key] = function()
@@ -206,5 +196,6 @@ table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], function()
     end
   end
 end})
+-- LuaFormatter on
 
 return M
