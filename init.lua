@@ -72,7 +72,7 @@ function M.evaluate_repl()
   if not f and s == e then return false end -- multi-line chunk; propagate key
   buffer:goto_pos(buffer.line_end_position[last_line])
   buffer:new_line()
-  if f then f, result = pcall(f) end
+  if f then result = select(2, pcall(f)) end
   if result then
     buffer:add_text('--> ')
     if type(result) == 'table' then
