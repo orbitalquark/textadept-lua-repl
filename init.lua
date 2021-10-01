@@ -176,16 +176,17 @@ M.keys = {
 }
 -- LuaFormatter on
 
--- Add REPL to Tools menu.
-table.insert(textadept.menu.menubar[_L['Tools']], {''})
 -- LuaFormatter off
-table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], function()
-  buffer.new()._type = '[Lua REPL]'
-  buffer:set_lexer('lua')
-  buffer:add_text('-- ' .. _L['Lua REPL']:gsub('_', ''))
-  buffer:new_line()
-  buffer:set_save_point()
-  -- Cannot initially define keys in `keys.lua` because that table does not exist yet and will
+---
+-- Applies or re-applies key bindings and REPL settings.
+-- @name init_buffer
+-- @param buff
+local function init_buffer(buff)
+	buff:set_lexer('lua')
+  buff:set_save_point()
+	buff:document_end()
+	
+	-- Cannot initially define keys in `keys.lua` because that table does not exist yet and will
   -- be overwritten by the Lua language module. Instead, define keys here.
   if not keys.lua[next(M.keys)] then
     for key, f in pairs(M.keys) do
@@ -195,7 +196,49 @@ table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], function()
       end
     end
   end
-end})
+end
 -- LuaFormatter on
+
+-- LuaFormatter off
+---
+-- Opens a new or existing REPL buffer.
+-- @name open_repl
+-- @param make_new True to create an additional REPL, nil or false to re-open an existing buffer.
+-- @return buffer
+function M.open_repl(make_new)
+	local buff
+	if not make_new then
+		for _,b in ipairs(_BUFFERS) do
+			if b._type == '[Lua REPL]' then
+				buff = b
+				break
+			end
+		end
+		if not buff and make_new == false then
+			return
+		end
+	end
+	if not buff then
+		buff = buffer.new()
+		buff._type = '[Lua REPL]'
+		buff:add_text('-- ' .. _L['Lua REPL']:gsub('_', ''))
+		buff:new_line()
+	end
+	init_buffer(buff)
+	view:goto_buffer(buff)
+	return buff
+end
+-- LuaFormatter on
+
+events.connect(events.RESET_AFTER,function()
+	for _, buff in ipairs(_BUFFERS) do
+		if buff._type == '[Lua REPL]' then
+			init_buffer(buff)
+		end
+	end
+end)
+
+table.insert(textadept.menu.menubar[_L['Tools']], {''})
+table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], M.open_repl})
 
 return M
