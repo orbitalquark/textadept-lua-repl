@@ -176,17 +176,9 @@ M.keys = {
 }
 -- LuaFormatter on
 
--- Add REPL to Tools menu.
-table.insert(textadept.menu.menubar[_L['Tools']], {''})
--- LuaFormatter off
-table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], function()
-  buffer.new()._type = '[Lua REPL]'
-  buffer:set_lexer('lua')
-  buffer:add_text('-- ' .. _L['Lua REPL']:gsub('_', ''))
-  buffer:new_line()
-  buffer:set_save_point()
-  -- Cannot initially define keys in `keys.lua` because that table does not exist yet and will
-  -- be overwritten by the Lua language module. Instead, define keys here.
+-- Cannot initially define keys in `keys.lua` because that table does not exist yet and will
+-- be overwritten by the Lua language module. Instead, define keys here.
+local function register_keys()
   if not keys.lua[next(M.keys)] then
     for key, f in pairs(M.keys) do
       keys.lua[key] = function()
@@ -195,7 +187,46 @@ table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], function()
       end
     end
   end
-end})
--- LuaFormatter on
+end
+events.connect(events.RESET_AFTER, register_keys)
+
+---
+-- Creates or switches to a Lua REPL.
+-- If *new* is `true`, creates a new REPL even if one already exists.
+-- @param new Flag that indicates whether or not to create a new REPL even if one already exists.
+function M.open(new)
+  local repl_view, repl_buf = nil, nil
+  for i = 1, #_VIEWS do
+    if _VIEWS[i].buffer._type == '[Lua REPL]' then
+      repl_view = _VIEWS[i]
+      break
+    end
+  end
+  for i = 1, #_BUFFERS do
+    if _BUFFERS[i]._type == '[Lua REPL]' then
+      repl_buf = _BUFFERS[i]
+      break
+    end
+  end
+  if new or not (repl_view or repl_buf) then
+    buffer.new()._type = '[Lua REPL]'
+    buffer:set_lexer('lua')
+    buffer:add_text('-- ' .. _L['Lua REPL']:gsub('_', ''))
+    buffer:new_line()
+    buffer:set_save_point()
+    register_keys()
+  else
+    if repl_view then
+      ui.goto_view(repl_view)
+    else
+      view:goto_buffer(repl_buf)
+    end
+    buffer:document_end() -- in case it's been scrolled in the meantime
+  end
+end
+
+-- Add REPL to Tools menu.
+table.insert(textadept.menu.menubar[_L['Tools']], {''})
+table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], M.open})
 
 return M
