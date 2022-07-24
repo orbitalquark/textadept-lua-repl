@@ -168,11 +168,11 @@ end
 -- @name keys
 M.keys = {
   ['\n'] = M.evaluate_repl,
-  [not OSX and 'c ' or 'aesc'] = M.complete_lua,
-  cup = M.cycle_history_prev,
-  cdown = M.cycle_history_next,
-  cp = M.cycle_history_prev,
-  cn = M.cycle_history_next
+  [not OSX and 'ctrl+ ' or 'alt+esc'] = M.complete_lua,
+  ['ctrl+up'] = M.cycle_history_prev,
+  ['ctrl+down'] = M.cycle_history_next,
+  ['ctrl+p'] = M.cycle_history_prev,
+  ['ctrl+n'] = M.cycle_history_next
 }
 -- LuaFormatter on
 
