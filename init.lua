@@ -168,7 +168,7 @@ end
 -- @name keys
 M.keys = {
   ['\n'] = M.evaluate_repl,
-  [not OSX and 'ctrl+ ' or 'alt+esc'] = M.complete_lua,
+  [not (OSX and not CURSES) and 'ctrl+ ' or 'alt+esc'] = M.complete_lua,
   ['ctrl+up'] = M.cycle_history_prev,
   ['ctrl+down'] = M.cycle_history_next,
   ['ctrl+p'] = M.cycle_history_prev,
