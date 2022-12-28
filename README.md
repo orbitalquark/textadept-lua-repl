@@ -18,6 +18,16 @@ Lines may be optionally prefixed with '=' (similar to the Lua prompt) to print a
 
 ## Functions defined by `lua_repl`
 
+<a id="M.open"></a>
+### `M.open`(*new*)
+
+Creates or switches to a Lua REPL.
+If *new* is `true`, creates a new REPL even if one already exists.
+
+Parameters:
+
+* *`new`*: Flag that indicates whether or not to create a new REPL even if one already exists.
+
 <a id="lua_repl.complete_lua"></a>
 ### `lua_repl.complete_lua`()
 

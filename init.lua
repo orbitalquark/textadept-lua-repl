@@ -168,7 +168,7 @@ end
 -- @name keys
 M.keys = {
   ['\n'] = M.evaluate_repl,
-  [not (OSX and not CURSES) and 'ctrl+ ' or 'alt+esc'] = M.complete_lua,
+  ['ctrl+ '] = M.complete_lua,
   ['ctrl+up'] = M.cycle_history_prev,
   ['ctrl+down'] = M.cycle_history_next,
   ['ctrl+p'] = M.cycle_history_prev,
@@ -211,7 +211,7 @@ function M.open(new)
   if new or not (repl_view or repl_buf) then
     buffer.new()._type = '[Lua REPL]'
     buffer:set_lexer('lua')
-    buffer:add_text('-- ' .. _L['Lua REPL']:gsub('_', ''))
+    buffer:add_text('-- ' .. _L['Lua REPL']:gsub('[_&]', ''))
     buffer:new_line()
     buffer:set_save_point()
     register_keys()
