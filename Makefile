@@ -4,14 +4,10 @@
 
 ta = ../..
 cwd = $(shell pwd)
-docs: luadoc README.md
+docs: README.md
 README.md: init.lua
-	cd $(ta)/scripts && luadoc --doclet markdowndoc $(cwd)/$< > $(cwd)/$@
+	cd $(ta)/scripts && ldoc --filter markdowndoc.ldoc $(cwd)/$< > $(cwd)/$@
 	sed -i -e '1,+4d' -e '6c# Lua REPL' -e '7d' -e 's/^##/#/;' $@
-luadoc: init.lua
-	cd $(ta)/modules && luadoc -d $(cwd) --doclet lua/tadoc $(cwd)/$< \
-		--ta-home=$(shell readlink -f $(ta))
-	sed -i 's/_HOME.\+\?_HOME/_HOME/;' tags
 
 # Releases.
 

@@ -1,6 +1,5 @@
 -- Copyright 2014-2023 Mitchell. See LICENSE.
 
---[[ This comment is for LuaDoc
 ---
 -- A Textadept module for loading an interactive Lua REPL using the editor's Lua State, similar
 -- to Lua's interactive REPL.
@@ -17,8 +16,7 @@
 -- to evaluate and type Enter to evaluate the entire chunk.
 --
 -- Lines may be optionally prefixed with '=' (similar to the Lua prompt) to print a result.
-module('lua_repl')]]
-
+-- @module lua_repl
 local M = {}
 
 -- Localizations.
@@ -43,14 +41,11 @@ local env = setmetatable({
 ---
 -- Lua command history.
 -- It has a numeric `pos` field that indicates where in the history the user currently is.
--- @class table
--- @name history
 M.history = {pos = 0}
 
 ---
 -- Evaluates as Lua code the current line or the text on the currently selected lines.
 -- If the current line has a syntax error, it is ignored and treated as a line continuation.
--- @name evaluate_repl
 function M.evaluate_repl()
   local s, e = buffer.selection_start, buffer.selection_end
   local code, last_line
@@ -94,9 +89,7 @@ function M.evaluate_repl()
   buffer:set_save_point()
 end
 
----
--- Shows a set of Lua code completions for the current position.
--- @name complete_lua
+--- Shows a set of Lua code completions for the current position.
 function M.complete_lua()
   local line, pos = buffer:get_cur_line()
   local symbol, op, part = line:sub(1, pos - 1):match('([%w_.]-)([%.:]?)([%w_]*)$')
@@ -125,9 +118,7 @@ function M.complete_lua()
   buffer:auto_c_show(#part - 1, table.concat(cmpls, string.char(buffer.auto_c_separator)))
 end
 
----
--- Cycle backward through command history, taking into account commands with multiple lines.
--- @name cycle_history_prev
+--- Cycle backward through command history, taking into account commands with multiple lines.
 function M.cycle_history_prev()
   if buffer:auto_c_active() then
     buffer:line_up()
@@ -143,9 +134,7 @@ function M.cycle_history_prev()
   buffer:add_text(M.history[M.history.pos])
 end
 
----
--- Cycle forward through command history, taking into account commands with multiple lines.
--- @name cycle_history_next
+--- Cycle forward through command history, taking into account commands with multiple lines.
 function M.cycle_history_next()
   if buffer:auto_c_active() then
     buffer:line_down()
@@ -161,20 +150,16 @@ function M.cycle_history_next()
   buffer:add_text(M.history[M.history.pos])
 end
 
--- LuaFormatter off
----
--- Table of key bindings for the REPL.
--- @class table
--- @name keys
+--- Table of key bindings for the REPL.
+M.keys = {} -- empty declaration to avoid LDoc processing
 M.keys = {
-  ['\n'] = M.evaluate_repl,
-  ['ctrl+ '] = M.complete_lua,
-  ['ctrl+up'] = M.cycle_history_prev,
-  ['ctrl+down'] = M.cycle_history_next,
-  ['ctrl+p'] = M.cycle_history_prev,
+  ['\n'] = M.evaluate_repl, --
+  ['ctrl+ '] = M.complete_lua, --
+  ['ctrl+up'] = M.cycle_history_prev, --
+  ['ctrl+down'] = M.cycle_history_next, --
+  ['ctrl+p'] = M.cycle_history_prev, --
   ['ctrl+n'] = M.cycle_history_next
 }
--- LuaFormatter on
 
 -- Cannot initially define keys in `keys.lua` because that table does not exist yet and will
 -- be overwritten by the Lua language module. Instead, define keys here.

@@ -18,16 +18,6 @@ Lines may be optionally prefixed with '=' (similar to the Lua prompt) to print a
 
 ## Functions defined by `lua_repl`
 
-<a id="M.open"></a>
-### `M.open`(*new*)
-
-Creates or switches to a Lua REPL.
-If *new* is `true`, creates a new REPL even if one already exists.
-
-Parameters:
-
-* *`new`*: Flag that indicates whether or not to create a new REPL even if one already exists.
-
 <a id="lua_repl.complete_lua"></a>
 ### `lua_repl.complete_lua`()
 
@@ -49,6 +39,16 @@ Cycle backward through command history, taking into account commands with multip
 Evaluates as Lua code the current line or the text on the currently selected lines.
 If the current line has a syntax error, it is ignored and treated as a line continuation.
 
+<a id="lua_repl.open"></a>
+### `lua_repl.open`(*new*)
+
+Creates or switches to a Lua REPL.
+If *new* is `true`, creates a new REPL even if one already exists.
+
+Parameters:
+
+- *new*:  Flag that indicates whether or not to create a new REPL even if one already exists.
+
 
 ## Tables defined by `lua_repl`
 
@@ -57,6 +57,10 @@ If the current line has a syntax error, it is ignored and treated as a line cont
 
 Lua command history.
 It has a numeric `pos` field that indicates where in the history the user currently is.
+
+Fields:
+
+- `pos`: 
 
 <a id="lua_repl.keys"></a>
 ### `lua_repl.keys`
