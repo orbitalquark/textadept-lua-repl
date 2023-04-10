@@ -1,7 +1,6 @@
 -- Copyright 2014-2023 Mitchell. See LICENSE.
 
----
--- A Textadept module for loading an interactive Lua REPL using the editor's Lua State, similar
+--- A Textadept module for loading an interactive Lua REPL using the editor's Lua State, similar
 -- to Lua's interactive REPL.
 --
 -- This is an alternative to the single-line Lua command entry.
@@ -22,10 +21,10 @@ local M = {}
 -- Localizations.
 if not rawget(_L, 'Lua REPL') then _L['Lua REPL'] = 'L_ua REPL' end
 
--- A special environment for a Lua REPL.
+--- A special environment for a Lua REPL.
 -- It has an `__index` metafield for accessing Textadept's global environment.
--- @class table
--- @name env
+-- @table env
+-- @local
 local env = setmetatable({
   print = function(...)
     buffer:add_text('--> ')
@@ -38,13 +37,11 @@ local env = setmetatable({
   end
 }, {__index = _G})
 
----
--- Lua command history.
+--- Lua command history.
 -- It has a numeric `pos` field that indicates where in the history the user currently is.
 M.history = {pos = 0}
 
----
--- Evaluates as Lua code the current line or the text on the currently selected lines.
+--- Evaluates as Lua code the current line or the text on the currently selected lines.
 -- If the current line has a syntax error, it is ignored and treated as a line continuation.
 function M.evaluate_repl()
   local s, e = buffer.selection_start, buffer.selection_end
@@ -161,8 +158,7 @@ M.keys = {
   ['ctrl+n'] = M.cycle_history_next
 }
 
--- Cannot initially define keys in `keys.lua` because that table does not exist yet and will
--- be overwritten by the Lua language module. Instead, define keys here.
+--- Register REPL keys.
 local function register_keys()
   if not keys.lua[next(M.keys)] then
     for key, f in pairs(M.keys) do
@@ -175,8 +171,7 @@ local function register_keys()
 end
 events.connect(events.RESET_AFTER, register_keys)
 
----
--- Creates or switches to a Lua REPL.
+--- Creates or switches to a Lua REPL.
 -- If *new* is `true`, creates a new REPL even if one already exists.
 -- @param new Flag that indicates whether or not to create a new REPL even if one already exists.
 function M.open(new)
