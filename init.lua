@@ -206,7 +206,7 @@ function M.open(new)
 end
 
 -- Add REPL to Tools menu.
-table.insert(textadept.menu.menubar[_L['Tools']], {''})
-table.insert(textadept.menu.menubar[_L['Tools']], {_L['Lua REPL'], M.open})
+table.insert(textadept.menu.menubar['Tools'], {''})
+table.insert(textadept.menu.menubar['Tools'], {_L['Lua REPL'], M.open})
 
 return M
