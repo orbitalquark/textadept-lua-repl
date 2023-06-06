@@ -8,7 +8,7 @@
 -- Install this module by copying it into your *~/.textadept/modules/* directory or Textadept's
 -- *modules/* directory, and then putting the following in your *~/.textadept/init.lua*:
 --
---     require('lua_repl')
+--	require('lua_repl')
 --
 -- Select "Tools > Lua REPL" to open the REPL. Typing the Enter key on any line evaluates that
 -- line, unless that line is a continuation line. In that case, when finished, select the lines
