@@ -111,8 +111,8 @@ function M.complete_lua()
 		end
 	end
 	table.sort(cmpls)
-	buffer.auto_c_order = buffer.ORDER_PRESORTED
-	buffer:auto_c_show(#part - 1, table.concat(cmpls, string.char(buffer.auto_c_separator)))
+	buffer.auto_c_separator, buffer.auto_c_order = string.byte(' '), buffer.ORDER_PRESORTED
+	buffer:auto_c_show(#part - 1, table.concat(cmpls, ' '))
 end
 
 --- Cycle backward through command history, taking into account commands with multiple lines.
