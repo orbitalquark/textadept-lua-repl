@@ -8,13 +8,31 @@ This is an alternative to the single-line Lua command entry.
 Install this module by copying it into your *~/.textadept/modules/* directory or Textadept's
 *modules/* directory, and then putting the following in your *~/.textadept/init.lua*:
 
-    require('lua_repl')
+	require('lua_repl')
 
 Select "Tools > Lua REPL" to open the REPL. Typing the Enter key on any line evaluates that
 line, unless that line is a continuation line. In that case, when finished, select the lines
 to evaluate and type Enter to evaluate the entire chunk.
 
 Lines may be optionally prefixed with '=' (similar to the Lua prompt) to print a result.
+
+## Fields defined by `lua_repl`
+
+<a id="lua_repl.history"></a>
+### `lua_repl.history` &lt;table&gt;
+
+Lua command history.
+It has a numeric `pos` field that indicates where in the history the user currently is.
+
+Fields:
+
+- `pos`: 
+
+<a id="lua_repl.keys"></a>
+### `lua_repl.keys` &lt;table&gt;
+
+Table of key bindings for the REPL.
+
 
 ## Functions defined by `lua_repl`
 
@@ -49,22 +67,5 @@ Parameters:
 
 - *new*:  Flag that indicates whether or not to create a new REPL even if one already exists.
 
-
-## Tables defined by `lua_repl`
-
-<a id="lua_repl.history"></a>
-### `lua_repl.history`
-
-Lua command history.
-It has a numeric `pos` field that indicates where in the history the user currently is.
-
-Fields:
-
-- `pos`: 
-
-<a id="lua_repl.keys"></a>
-### `lua_repl.keys`
-
-Table of key bindings for the REPL.
 
 ---
