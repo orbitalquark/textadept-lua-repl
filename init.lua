@@ -148,7 +148,10 @@ function M.cycle_history_next()
 end
 
 --- Table of key bindings for the REPL.
-M.keys = {} -- empty declaration to avoid LDoc processing
+-- @field keys
+
+-- This separation is needed to prevent LDoc from parsing the following table.
+
 M.keys = {
 	['\n'] = M.evaluate_repl, --
 	['ctrl+ '] = M.complete_lua, --
