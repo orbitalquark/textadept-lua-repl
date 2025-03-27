@@ -6,8 +6,8 @@ ta = ../..
 cwd = $(shell pwd)
 docs: README.md
 README.md: init.lua
-	cd $(ta)/scripts && ldoc --filter markdowndoc.ldoc $(cwd)/$< > $(cwd)/$@
-	sed -i -e '1,+4d' -e '6c# Lua REPL' -e '7d' -e 's/^##/#/;' $@
+	cd $(ta)/scripts && ldoc --filter markdowndoc.ldoc $(cwd)/$< -- --title="Lua REPL" --single \
+		> $(cwd)/$@
 
 # Releases.
 

@@ -2,13 +2,14 @@
 
 --- A Textadept module for loading an interactive Lua REPL using the editor's Lua State, similar
 -- to Lua's interactive REPL.
---
 -- This is an alternative to the single-line Lua command entry.
 --
 -- Install this module by copying it into your *~/.textadept/modules/* directory or Textadept's
 -- *modules/* directory, and then putting the following in your *~/.textadept/init.lua*:
 --
---	require('lua_repl')
+-- ```lua
+-- local lua_repl = require('lua_repl')
+-- ```
 --
 -- Select "Tools > Lua REPL" to open the REPL. Typing the Enter key on any line evaluates that
 -- line, unless that line is a continuation line. In that case, when finished, select the lines
@@ -175,8 +176,7 @@ end
 events.connect(events.RESET_AFTER, register_keys)
 
 --- Creates or switches to a Lua REPL.
--- If *new* is `true`, creates a new REPL even if one already exists.
--- @param new Flag that indicates whether or not to create a new REPL even if one already exists.
+-- @param[opt=false] new Create a new REPL even if one already exists.
 function M.open(new)
 	local repl_view, repl_buf = nil, nil
 	for i = 1, #_VIEWS do
