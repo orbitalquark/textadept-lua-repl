@@ -95,10 +95,8 @@ function M.complete_lua()
 	if (not ok or type(result) ~= 'table') and symbol ~= '' then return end
 	local cmpls = {}
 	part = '^' .. part
-	if not ok or symbol == 'buffer' then
-		local sci = _SCINTILLA
-		local global_envs = not ok and {_G} or
-			(op == ':' and {sci.functions} or {sci.properties, sci.constants})
+	if not ok or symbol == 'buffer' or symbol == 'view' then
+		local global_envs = not ok and {_G} or {_SCINTILLA} -- undocumented
 		for i = 1, #global_envs do
 			for k in pairs(global_envs[i]) do
 				if type(k) == 'string' and k:find(part) then cmpls[#cmpls + 1] = k end
