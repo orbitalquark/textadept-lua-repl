@@ -15,6 +15,12 @@
 -- line, unless that line is a continuation line. In that case, when finished, select the lines
 -- to evaluate and type Enter to evaluate the entire chunk.
 --
+-- Tab completion is available, as is cycling through history with the `Ctrl+Up`/`Ctrl+Down`
+-- and `Ctrl+P` and `Ctrl+N` keys.
+--
+-- **Note:** if the Language Server Protocol (LSP) module is enabled, any completions coming
+-- from that module are separate from this module's completions.
+--
 -- Lines may be optionally prefixed with '=' (similar to the Lua prompt) to print a result.
 -- @module lua_repl
 local M = {}
@@ -87,8 +93,9 @@ function M.evaluate_repl()
 	buffer:set_save_point()
 end
 
---- Shows a set of Lua code completions for the current position.
-function M.complete_lua()
+-- Autocompleter function for the Lua REPL.
+-- @function _G.textadept.editing.autocompleters.lua_repl
+textadept.editing.autocompleters.lua_repl = function()
 	local line, pos = buffer:get_cur_line()
 	local symbol, op, part = line:sub(1, pos - 1):match('([%w_.]-)([%.:]?)([%w_]*)$')
 	local ok, result = pcall((load(string.format('return (%s)', symbol), nil, 't', env)))
@@ -109,17 +116,12 @@ function M.complete_lua()
 			end
 		end
 	end
-	table.sort(cmpls)
-	buffer.auto_c_separator, buffer.auto_c_order = string.byte(' '), buffer.ORDER_PRESORTED
-	buffer:auto_c_show(#part - 1, table.concat(cmpls, ' '))
+	return #part - 1, cmpls
 end
 
 --- Cycle backward through command history, taking into account commands with multiple lines.
 function M.cycle_history_prev()
-	if buffer:auto_c_active() then
-		buffer:line_up()
-		return
-	end
+	if buffer:auto_c_active() then return false end -- propagate
 	if M.history.pos <= 1 then return end
 	for _ in (M.history[M.history.pos] or ''):gmatch('\n') do
 		buffer:line_delete()
@@ -132,10 +134,7 @@ end
 
 --- Cycle forward through command history, taking into account commands with multiple lines.
 function M.cycle_history_next()
-	if buffer:auto_c_active() then
-		buffer:line_down()
-		return
-	end
+	if buffer:auto_c_active() then return false end -- propagate
 	if M.history.pos >= #M.history then return end
 	for _ in (M.history[M.history.pos] or ''):gmatch('\n') do
 		buffer:line_delete()
@@ -153,21 +152,30 @@ end
 
 M.keys = {
 	['\n'] = M.evaluate_repl, --
-	['ctrl+ '] = M.complete_lua, --
-	['ctrl+up'] = M.cycle_history_prev, --
-	['ctrl+down'] = M.cycle_history_next, --
-	['ctrl+p'] = M.cycle_history_prev, --
-	['ctrl+n'] = M.cycle_history_next
+	['\t'] = function() textadept.editing.autocomplete('lua_repl') end,
+	['ctrl+up'] = M.cycle_history_prev, ['ctrl+p'] = M.cycle_history_prev, --
+	['ctrl+down'] = M.cycle_history_next, ['ctrl+n'] = M.cycle_history_next
 }
+
+--- Returns whether or not a buffer is the REPL buffer.
+local function is_repl_buf(buf) return buf._type == _L['[Lua REPL]'] end
+
+--- Helper function for getting the REPL view.
+local function get_repl_view()
+	for _, view in ipairs(_VIEWS) do if is_repl_buf(view.buffer) then return view end end
+end
+--- Helper function for getting the REPL buffer.
+local function get_repl_buffer()
+	for _, buffer in ipairs(_BUFFERS) do if is_repl_buf(buffer) then return buffer end end
+end
 
 --- Register REPL keys.
 local function register_keys()
-	if not keys.lua[next(M.keys)] then
-		for key, f in pairs(M.keys) do
-			keys.lua[key] = function()
-				if buffer._type ~= '[Lua REPL]' then return false end -- propagate
-				f()
-			end
+	if keys.lua[next(M.keys)] then return end -- already registered
+	for key, f in pairs(M.keys) do
+		keys.lua[key] = function()
+			if buffer._type == '[Lua REPL]' then return f() end
+			return false -- propagate
 		end
 	end
 end
@@ -176,19 +184,7 @@ events.connect(events.RESET_AFTER, register_keys)
 --- Creates or switches to a Lua REPL.
 -- @param[opt=false] new Create a new REPL even if one already exists.
 function M.open(new)
-	local repl_view, repl_buf = nil, nil
-	for i = 1, #_VIEWS do
-		if _VIEWS[i].buffer._type == '[Lua REPL]' then
-			repl_view = _VIEWS[i]
-			break
-		end
-	end
-	for i = 1, #_BUFFERS do
-		if _BUFFERS[i]._type == '[Lua REPL]' then
-			repl_buf = _BUFFERS[i]
-			break
-		end
-	end
+	local repl_view, repl_buf = get_repl_view(), get_repl_buffer()
 	if new or not (repl_view or repl_buf) then
 		buffer.new()._type = '[Lua REPL]'
 		buffer:set_lexer('lua')

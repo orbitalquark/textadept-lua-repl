@@ -16,12 +16,13 @@ Select "Tools > Lua REPL" to open the REPL. Typing the Enter key on any line eva
 line, unless that line is a continuation line. In that case, when finished, select the lines
 to evaluate and type Enter to evaluate the entire chunk.
 
+Tab completion is available, as is cycling through history with the `Ctrl+Up`/`Ctrl+Down`
+and `Ctrl+P` and `Ctrl+N` keys.
+
+**Note:** if the Language Server Protocol (LSP) module is enabled, any completions coming
+from that module are separate from this module's completions.
+
 Lines may be optionally prefixed with '=' (similar to the Lua prompt) to print a result.
-
-<a id="lua_repl.complete_lua"></a>
-## `lua_repl.complete_lua`()
-
-Shows a set of Lua code completions for the current position.
 
 <a id="lua_repl.cycle_history_next"></a>
 ## `lua_repl.cycle_history_next`()
@@ -48,7 +49,6 @@ Lua command history.
 It has a numeric `pos` field that indicates where in the history the user currently is.
 
 Fields:
-
 - `pos`: 
 
 <a id="lua_repl.keys"></a>
