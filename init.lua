@@ -49,7 +49,7 @@ local env = setmetatable({
 
 --- Lua command history.
 -- It has a numeric `pos` field that indicates where in the history the user currently is.
-M.history = {pos = 0}
+local history = {pos = 0}
 
 --- Evaluates as Lua code the current line or the text on the currently selected lines.
 -- If the current line has a syntax error, it is ignored and treated as a line continuation.
@@ -91,8 +91,8 @@ function M.evaluate_repl()
 		buffer:add_text(tostring(result):gsub('(\r?\n)', '%1--> '))
 		buffer:new_line()
 	end
-	M.history[#M.history + 1] = code
-	M.history.pos = #M.history + 1
+	history[#history + 1] = code
+	history.pos = #history + 1
 	buffer:set_save_point()
 end
 
@@ -125,28 +125,31 @@ end
 --- Cycle backward through command history, taking into account commands with multiple lines.
 function M.cycle_history_prev()
 	if buffer:auto_c_active() then return false end -- propagate
-	if M.history.pos <= 1 then return end
-	for _ in (M.history[M.history.pos] or ''):gmatch('\n') do
+	if history.pos <= 1 then return end
+	for _ in (history[history.pos] or ''):gmatch('\n') do
 		buffer:line_delete()
 		buffer:delete_back()
 	end
 	buffer:line_delete()
-	M.history.pos = math.max(M.history.pos - 1, 1)
-	buffer:add_text(M.history[M.history.pos])
+	history.pos = math.max(history.pos - 1, 1)
+	buffer:add_text(history[history.pos])
 end
 
 --- Cycle forward through command history, taking into account commands with multiple lines.
 function M.cycle_history_next()
 	if buffer:auto_c_active() then return false end -- propagate
-	if M.history.pos >= #M.history then return end
-	for _ in (M.history[M.history.pos] or ''):gmatch('\n') do
+	if history.pos >= #history then return end
+	for _ in (history[history.pos] or ''):gmatch('\n') do
 		buffer:line_delete()
 		buffer:delete_back()
 	end
 	buffer:line_delete()
-	M.history.pos = math.min(M.history.pos + 1, #M.history)
-	buffer:add_text(M.history[M.history.pos])
+	history.pos = math.min(history.pos + 1, #history)
+	buffer:add_text(history[history.pos])
 end
+
+--- Clears the command history.
+function M.clear_history() history = {pos = 0} end
 
 --- Table of key bindings for the REPL.
 -- @field keys

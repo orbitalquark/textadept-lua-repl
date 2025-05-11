@@ -2,6 +2,8 @@
 
 local lua_repl = require('lua_repl')
 
+teardown(lua_repl.clear_history)
+
 test('lua_repl.open should open a REPL', function()
 	lua_repl.open()
 
