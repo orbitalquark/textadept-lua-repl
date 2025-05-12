@@ -24,6 +24,11 @@ from that module are separate from this module's completions.
 
 Lines may be optionally prefixed with '=' (similar to the Lua prompt) to print a result.
 
+<a id="lua_repl.clear_history"></a>
+## `lua_repl.clear_history`()
+
+Clears the command history.
+
 <a id="lua_repl.cycle_history_next"></a>
 ## `lua_repl.cycle_history_next`()
 
@@ -40,16 +45,6 @@ Cycle backward through command history, taking into account commands with multip
 Evaluates as Lua code the current line or the text on the currently selected lines.
 
 If the current line has a syntax error, it is ignored and treated as a line continuation.
-
-<a id="lua_repl.history"></a>
-## `lua_repl.history`
-
-Lua command history.
-
-It has a numeric `pos` field that indicates where in the history the user currently is.
-
-Fields:
-- `pos`: 
 
 <a id="lua_repl.keys"></a>
 ## `lua_repl.keys`
