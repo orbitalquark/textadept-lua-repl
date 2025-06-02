@@ -25,12 +25,6 @@
 -- @module lua_repl
 local M = {}
 
--- Localizations.
-if not rawget(_L, 'Lua REPL') then
-	_L['Lua REPL'] = 'L_ua REPL'
-	_L['[Lua REPL]'] = '[Lua REPL]'
-end
-
 --- A special environment for a Lua REPL.
 -- It has an `__index` metafield for accessing Textadept's global environment.
 -- @table env
@@ -209,6 +203,7 @@ function M.open(new)
 end
 
 -- Add REPL to Tools menu.
+_L['Lua REPL'] = 'L_ua REPL'
 table.insert(textadept.menu.menubar['Tools'], {''})
 table.insert(textadept.menu.menubar['Tools'], {_L['Lua REPL'], M.open})
 
