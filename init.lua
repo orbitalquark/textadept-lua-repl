@@ -30,9 +30,8 @@ local M = {}
 -- @table env
 -- @local
 local env = setmetatable({
-	print = function(...)
+	print = function(...args)
 		buffer:add_text('--> ')
-		local args = table.pack(...)
 		for i = 1, args.n do
 			buffer:add_text(tostring(args[i]))
 			if i < args.n then buffer:add_text('\t') end
