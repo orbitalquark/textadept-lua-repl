@@ -1,4 +1,4 @@
--- Copyright 2014-2025 Mitchell. See LICENSE.
+-- Copyright 2014-2026 Mitchell. See LICENSE.
 
 --- A Textadept module for loading an interactive Lua REPL using the editor's Lua State, similar
 -- to Lua's interactive REPL.
